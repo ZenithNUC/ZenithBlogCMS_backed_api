@@ -1,2 +1,3 @@
 # ZenithBlogCMS_backed_api
-ZenithBlogCMS的后端接口
+
+ZenithBlogCMS的后端接口，将与ZenithBlogCMS前台及后台前端配合使用，该模块基于nodejs的express框架，运行在3004端口。
