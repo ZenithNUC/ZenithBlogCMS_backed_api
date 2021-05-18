@@ -8,6 +8,7 @@ const config = {
         password:'123456'
     },
     curInfo : 1,
+    TokenKey : 'WfeeEWQw@d../sdaRa'
 };
 
 if (process.env.NODE_ENV === 'production'){
