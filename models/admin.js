@@ -1,7 +1,7 @@
 // 引入Sequelize模块
 const Sequelize = require('sequelize');
 // 引入数据库实例
-const db = require('../db');
+const db = require('../database');
 // 定义model
 const Admin = db.define('Admin', {
     // 主键
