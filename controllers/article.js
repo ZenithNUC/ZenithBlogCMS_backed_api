@@ -63,9 +63,9 @@ function list (req, res) {
                             id: v.id,
                             title: v.title,
                             desc: v.desc.substr(0, 20) + '...',
-                            cate: v.cate,
+                            cate: v.category,
                             // 获取联表查询中的cate表中的name
-                            cateName: v.Cate.name,
+                            cateName: v.Category.name,
                             content: v.content,
                             createdAt: dateFormat (v.createdAt, 'yyyy-mm-dd HH:MM:ss')
                         };
@@ -98,7 +98,54 @@ function list (req, res) {
  * @param res
  */
 function info (req, res) {
+    const resObj = Common.clone (Constant.DEFAULT_SUCCESS);
+    let tasks = {
+        checkParams: (cb) => {
+            // 调用公共方法中的校验参数方法，成功继续后面操作，失败则传递错误信息到async最终方法
+            Common.checkParams (req.params, ['id'], cb);
+        },
+        // 查询方法，依赖校验参数方法
+        query: ['checkParams', (results, cb) => {
+            // 使用article的model中的方法查询
+            ArticleModel
+                .findByPk (req.params.id, {
+                    include: [{
+                        model: CateModel
+                    }]
+                })
+                .then (function (result) {
+                    // 查询结果处理
+                    // 如果查询到结果
+                    if(result){
+                        // 将查询到的结果给返回对象赋值
+                        resObj.data = {
+                            id: result.id,
+                            name: result.name,
+                            desc: result.desc,
+                            content: result.content,
+                            cate: result.category,
+                            // 获取联表查询中的cate表中的name
+                            cateName: result.Category.name,
+                            createdAt: dateFormat (result.createdAt, 'yyyy-mm-dd HH:MM:ss')
+                        };
+                        // 继续后续操作
+                        cb(null);
+                    }else{
+                        // 查询失败，传递错误信息到async最终方法
+                        cb (Constant.ARTICLE_NOT_EXSIT);
+                    }
+                })
+                .catch (function (err) {
+                    // 错误处理
+                    // 打印错误日志
+                    console.log (err);
+                    // 传递错误信息到async最终方法
+                    cb (Constant.DEFAULT_ERROR);
+                });
 
+        }]
+    }
+    Common.autoFn (tasks, res, resObj)
 }
 
 /**
