@@ -149,7 +149,41 @@ function add(req,res){
 }
 
 function update(req,res){
-
+    const resObj = Common.clone(Constant.DEFAULT_SUCCESS)
+    let tasks = {
+        checkParams:(cb) => {
+            Common.checkParams (req.body, ['id','name'], cb);
+        },
+        update:cb => {
+            CateModel
+                .update ({
+                    name: req.body.name
+                }, {
+                    where: {
+                        id: req.body.id
+                    }
+                })
+                .then (function (result) {
+                    // 更新结果处理
+                    if(result[0]){
+                        // 如果更新成功
+                        // 继续后续操作
+                        cb (null);
+                    }else{
+                        // 更新失败，传递错误信息到async最终方法
+                        cb (Constant.CATE_NOT_EXSIT);
+                    }
+                })
+                .catch (function (err) {
+                    // 错误处理
+                    // 打印错误日志
+                    console.log (err);
+                    // 传递错误信息到async最终方法
+                    cb (Constant.DEFAULT_ERROR);
+                });
+        }
+    }
+    Common.autoFn(tasks,res,resObj)
 }
 
 function remove(req,res){
