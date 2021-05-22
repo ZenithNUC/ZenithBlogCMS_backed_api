@@ -125,7 +125,27 @@ function info(req,res){
 }
 
 function add(req,res){
-
+    const resObj = Common.clone(Constant.DEFAULT_SUCCESS)
+    let tasks = {
+        checkParams:(cb) => {
+            Common.checkParams (req.body, ['name'], cb);
+        },
+        add: cb => {
+            CateModel
+                .create({
+                    name:req.body.name
+                })
+                .then(function (result){
+                    cb (null);
+                })
+                .catch(function (err){
+                    console.log (err);
+                    // 传递错误信息到async最终方法
+                    cb (Constant.DEFAULT_ERROR);
+                })
+        }
+    }
+    Common.autoFn(tasks,res,resObj)
 }
 
 function update(req,res){
