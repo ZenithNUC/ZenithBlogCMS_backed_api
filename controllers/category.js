@@ -4,7 +4,7 @@ const CateModel = require("../models/category")
 
 const Constant = require('../constant/constant')
 
-const dataFormat = require('dateformat')
+const dateFormat = require('dateformat')
 
 let exportObj = {
     list,
@@ -26,9 +26,9 @@ function list(req,res){
     let tasks = {
         checkParams:(cb) => {
             if(req.query.dropList){
-                cb(null)
+                cb(null);
             }else{
-                Common.checkParams(req.q,['page','rows'],cb);
+                Common.checkParams(req.query,['page','rows'],cb);
             }
         },
         query:['checkParams',(results,cb) => {
@@ -84,8 +84,44 @@ function list(req,res){
     Common.autoFn(tasks,res,resObj)
 }
 
+/**
+ * 获取单条分类方法
+ * @param req
+ * @param res
+ */
 function info(req,res){
-
+    const resObj = Common.clone(Constant.DEFAULT_SUCCESS)
+    let tasks = {
+        checkParams:(cb) => {
+            if(req.query.dropList){
+                cb(null)
+            }else{
+                Common.checkParams(req.q,['id'],cb);
+            }
+        },
+        query:['checkParams', (results, cb) => {
+            CateModel
+                .findByPk(req.params.id)
+                .then(function (result){
+                    if(result){
+                        resObj.data = {
+                            id: result.id,
+                            name: result.name,
+                            createdAt: dateFormat (result.createdAt, 'yyyy-mm-dd HH:MM:ss')
+                        }
+                        cb(null);
+                    }else {
+                        cb (Constant.CATE_NOT_EXSIT);
+                    }
+                })
+                .catch(function (err){
+                    console.log (err);
+                    // 传递错误信息到async最终方法
+                    cb (Constant.DEFAULT_ERROR);
+                })
+        }]
+    }
+    Common.autoFn(tasks,res,resObj)
 }
 
 function add(req,res){

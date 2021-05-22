@@ -7,7 +7,7 @@ var logger = require('morgan');
 const verifyMiddleware = require('./routes/middleware/verify');
 
 var indexRouter = require('./routes/index');
-//var categoryRouter = require('./routes/category');
+var categoryRouter = require('./routes/category');
 //var infoRouter = require('./routes/info');
 //var articleRouter = require('./routes/article');
 //var adminRouter = require('./routes/admin');
@@ -25,7 +25,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/',indexRouter);
-//app.use('/category', verifyMiddleware.verifyToken ,categoryRouter);
+app.use('/category', verifyMiddleware.verifyToken ,categoryRouter);
 //app.use('/info', verifyMiddleware.verifyToken ,infoRouter);
 //app.use('/article', verifyMiddleware.verifyToken ,articleRouter);
 //app.use('/admin',adminRouter);
