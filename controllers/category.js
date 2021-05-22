@@ -187,5 +187,43 @@ function update(req,res){
 }
 
 function remove(req,res){
-
+    const resObj = Common.clone (Constant.DEFAULT_SUCCESS);
+    // 定义一个async任务
+    let tasks = {
+        // 校验参数方法
+        checkParams: (cb) => {
+            // 调用公共方法中的校验参数方法，成功继续后面操作，失败则传递错误信息到async最终方法
+            Common.checkParams (req.body, ['id'], cb);
+        },
+        // 删除方法，依赖校验参数方法
+        remove: cb => {
+            // 使用cate的model中的方法更新
+            CateModel
+                .destroy ({
+                    where: {
+                        id: req.body.id
+                    }
+                })
+                .then (function (result) {
+                    // 删除结果处理
+                    if(result){
+                        // 如果删除成功
+                        // 继续后续操作
+                        cb (null);
+                    }else{
+                        // 删除失败，传递错误信息到async最终方法
+                        cb (Constant.CATE_NOT_EXSIT);
+                    }
+                })
+                .catch (function (err) {
+                    // 错误处理
+                    // 打印错误日志
+                    console.log (err);
+                    // 传递错误信息到async最终方法
+                    cb (Constant.DEFAULT_ERROR);
+                });
+        }
+    };
+    // 执行公共方法中的autoFn方法，返回数据
+    Common.autoFn (tasks, res, resObj)
 }

@@ -12,6 +12,6 @@ router.post ('/', CategoryController.add);
 // 定义修改分类路由，PUT请求
 router.put ('/', CategoryController.update);
 // 定义删除分类路由，DELETE请求
-//router.delete ('/', CategoryController.remove);
+router.delete ('/', CategoryController.remove);
 
 module.exports = router;
