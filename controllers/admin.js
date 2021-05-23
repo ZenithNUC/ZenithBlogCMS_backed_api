@@ -169,7 +169,50 @@ function add(req,res){
 }
 
 function update(req,res){
-
+    const resObj = Common.clone (Constant.DEFAULT_SUCCESS);
+    // 定义一个async任务
+    let tasks = {
+        // 校验参数方法
+        checkParams: (cb) => {
+            // 调用公共方法中的校验参数方法，成功继续后面操作，失败则传递错误信息到async最终方法
+            Common.checkParams (req.body, ['id', 'username', 'password', 'name', 'role'], cb);
+        },
+        // 更新方法，依赖校验参数方法
+        update: cb => {
+            // 使用admin的model中的方法更新
+            AdminModel
+                .update ({
+                    username: req.body.username,
+                    password: req.body.password,
+                    name: req.body.name,
+                    role: req.body.role
+                }, {
+                    where: {
+                        id: req.body.id
+                    }
+                })
+                .then (function (result) {
+                    // 更新结果处理
+                    if(result[0]){
+                        // 如果更新成功
+                        // 继续后续操作
+                        cb (null);
+                    }else{
+                        // 更新失败，传递错误信息到async最终方法
+                        cb (Constant.ADMIN_NOT_EXSIT);
+                    }
+                })
+                .catch (function (err) {
+                    // 错误处理
+                    // 打印错误日志
+                    console.log (err);
+                    // 传递错误信息到async最终方法
+                    cb (Constant.DEFAULT_ERROR);
+                });
+        }
+    };
+    // 执行公共方法中的autoFn方法，返回数据
+    Common.autoFn (tasks, res, resObj)
 }
 
 function remove(req,res){
