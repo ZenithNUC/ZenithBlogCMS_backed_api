@@ -1,7 +1,6 @@
 const database = require('../database');
 const Sequelize = require('sequelize');
 
-
 const Category = database.define('Category',{
     id:{            //主键
         type:Sequelize.INTEGER,

@@ -1,9 +1,9 @@
 // 引入Sequelize模块
 const Sequelize = require('sequelize');
 // 引入数据库实例
-const db = require('../database');
+const database = require('../database');
 // 定义model
-const Admin = db.define('Admin', {
+const Admin = database.define('Admin', {
     // 主键
     id: {type: Sequelize.INTEGER, primaryKey: true, allowNull: false, autoIncrement: true},
     // 用户名

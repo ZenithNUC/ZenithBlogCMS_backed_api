@@ -59,11 +59,12 @@ function list (req, res) {
                     let list = [];
                     // 遍历SQL查询出来的结果，处理后装入list
                     result.rows.forEach ((v, i) => {
+                        console.log(v)
                         let obj = {
                             id: v.id,
                             title: v.title,
-                            desc: v.desc.substr(0, 20) + '...',
-                            cate: v.category,
+                            description: v.description.substr(0, 20) + '...',
+                            category: v.category,
                             // 获取联表查询中的cate表中的name
                             cateName: v.Category.name,
                             content: v.content,
@@ -121,9 +122,9 @@ function info (req, res) {
                         resObj.data = {
                             id: result.id,
                             name: result.name,
-                            desc: result.desc,
+                            description: result.description,
                             content: result.content,
-                            cate: result.category,
+                            category: result.category,
                             // 获取联表查询中的cate表中的name
                             cateName: result.Category.name,
                             createdAt: dateFormat (result.createdAt, 'yyyy-mm-dd HH:MM:ss')
@@ -154,7 +155,41 @@ function info (req, res) {
  * @param res
  */
 function add (req, res) {
-
+    // 定义一个返回对象
+    const resObj = Common.clone (Constant.DEFAULT_SUCCESS);
+    // 定义一个async任务
+    let tasks = {
+        // 校验参数方法
+        checkParams: (cb) => {
+            // 调用公共方法中的校验参数方法，成功继续后面操作，失败则传递错误信息到async最终方法
+            Common.checkParams (req.body, ['title', 'category', 'description', 'content'], cb);
+        },
+        // 添加方法，依赖校验参数方法
+        add: cb => {
+            // 使用article的model中的方法插入到数据库
+            ArticleModel
+                .create ({
+                    title: req.body.title,
+                    description: req.body.description,
+                    content: req.body.content,
+                    category: req.body.category
+                })
+                .then (function (result) {
+                    // 插入结果处理
+                    // 继续后续操作
+                    cb (null);
+                })
+                .catch (function (err) {
+                    // 错误处理
+                    // 打印错误日志
+                    console.log (err);
+                    // 传递错误信息到async最终方法
+                    cb (Constant.DEFAULT_ERROR);
+                });
+        }
+    };
+    // 执行公共方法中的autoFn方法，返回数据
+    Common.autoFn (tasks, res, resObj)
 }
 
 /**
